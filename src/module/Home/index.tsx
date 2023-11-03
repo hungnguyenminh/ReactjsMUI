@@ -7,9 +7,40 @@ import { Button } from '@mui/material';
 import Campaign from './components/Campain';
 import Information from './components/Information';
 
+export interface IInformation {
+  name: string;
+  describe: string;
+}
+
+export interface IListSubCompaign {
+  name: string;
+  status: boolean
+  ads: {
+    name: string,
+    quantity: number
+  }[]
+}
+
+export const initTialValueCampaign: IListSubCompaign = {
+  name: 'Chiến dịch 1',
+  status: true,
+  ads: [
+    {
+      name: '',
+      quantity: 8,
+    },
+  ],
+};
+
 function Home() {
   const [value, setValue] = useState<string>('1');
-  const [commonCampaign, setCommonCampain] = useState<string | null>(null);
+  const [commonCampaign, setCommonCampain] = useState<IInformation>({
+    name: '',
+    describe: '',
+  });
+  const [listSubCampaign, setListSubCampagin] = useState<IListSubCompaign[]>([
+    initTialValueCampaign,
+  ]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -26,12 +57,12 @@ function Home() {
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList onChange={handleChange} aria-label="lab API tabs example">
-              <Tab label="THÔNG TIN" value="1" />
-              <Tab label="CHIẾN DỊCH CON" value="2" />
+              <Tab className="customTab" label="THÔNG TIN" value="1" />
+              <Tab className="customTab" label="CHIẾN DỊCH CON" value="2" />
             </TabList>
           </Box>
-          <TabPanel value="1" style={{ padding: 0 }}><Information setCommonCampain={setCommonCampain} /></TabPanel>
-          <TabPanel value="2" style={{ padding: 0 }}><Campaign /></TabPanel>
+          <TabPanel value="1" style={{ padding: 0 }}><Information commonCampaign={commonCampaign} setCommonCampain={setCommonCampain} /></TabPanel>
+          <TabPanel value="2" style={{ padding: 0 }}><Campaign listSubCampaign={listSubCampaign} setListSubCampagin={setListSubCampagin} /></TabPanel>
         </TabContext>
       </div>
     </div>

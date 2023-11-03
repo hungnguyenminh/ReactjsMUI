@@ -9,5 +9,9 @@
 
   .tab-campaign {
     padding: 20px;
+
+    .customTab {
+        min-width: 150px;
+    }
   }
 }

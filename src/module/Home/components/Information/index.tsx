@@ -2,9 +2,11 @@ import React, { Dispatch, SetStateAction } from 'react';
 import { TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import './style.scss';
+import { IInformation } from '../../index';
 
 interface Iprops {
-  setCommonCampain: Dispatch<SetStateAction<string | null>>;
+  commonCampaign: IInformation;
+  setCommonCampain: Dispatch<SetStateAction<IInformation>>;
 }
 
 interface IListInput {
@@ -21,12 +23,13 @@ const styleTextField = {
 };
 
 function Information(props: Iprops) {
-  const { setCommonCampain } = props;
+  const { setCommonCampain, commonCampaign } = props;
 
   const handleChangeInput = (nameCampaign: string, value?: any): void => {
-    setCommonCampain('ss');
-    console.log('name', nameCampaign);
-    console.log('value: ', value.target.value);
+    setCommonCampain({
+      name: nameCampaign === 'name' ? value.target.value : commonCampaign.name,
+      describe: nameCampaign === 'describe' ? value.target.value : commonCampaign.describe,
+    });
   };
 
   const listInput: IListInput[] = [
@@ -35,13 +38,13 @@ function Information(props: Iprops) {
       id: 'outlined-basic',
       error: true,
       helperText: 'Dữ liệu không hợp lệ',
-      name: 'nameCampaign',
+      name: 'name',
     },
     {
       label: 'Mô tả',
       id: 'outlined-basic',
       error: false,
-      name: 'description',
+      name: 'describe',
     },
   ];
 
