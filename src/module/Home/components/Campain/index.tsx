@@ -32,18 +32,23 @@ function Campaign(props: IProps) {
   // });
   // // console.log(campaignSelected);
 
-  // console.log('arrayAdvertise', arrayAdvertise);
+  console.log('listSubCampaign', listSubCampaign);
+  // console.log('campaignSelected', campaignSelected);
   const handleClickCampaign = (valueItem: IListSubCompaign):void => {
     setCampaignSelected(valueItem);
   };
 
-  const handleUpdateListSubCampaign = (check: any): void => {
+  const handleUpdateListSubCampaign = (inputValue: any, type: 'name' | 'status'): void => {
     const newArray = [...listSubCampaign];
 
     // eslint-disable-next-line max-len
     const findIndex = newArray.findIndex((item: IListSubCompaign) => item.name === campaignSelected.name);
 
-    const newObject = { ...listSubCampaign[findIndex], status: check };
+    const newObject = {
+      name: type === 'name' ? inputValue : newArray[findIndex].name,
+      status: type === 'status' ? inputValue : newArray[findIndex].status,
+      ads: newArray[findIndex].ads,
+    };
 
     newArray[findIndex] = newObject;
 
@@ -55,36 +60,21 @@ function Campaign(props: IProps) {
   const onChangeCheckbox = (e: any): void => {
     console.log('ee', e.target.checked);
     setCampaignSelected({ ...campaignSelected, status: e.target.checked });
-    handleUpdateListSubCampaign(e.target.checked);
+    handleUpdateListSubCampaign(e.target.checked, 'status');
   };
 
   const onChangeNameSubCampaign = (value: any): void => {
-    console.log('value', value.target.value);
     setCampaignSelected({ ...campaignSelected, name: value.target.value });
+    // eslint-disable-next-line no-undef
+    handleUpdateListSubCampaign(value.target.value, 'name');
   };
 
   const onChangeNameAdvertise = (idItem: number, value: any): void => {
     console.log('e', value.target.value);
     console.log('idItem', idItem);
-
-    // const newArr = [...arrayAdvertise];
-
-    // console.log('new arrr', newArr);
-
-    // const findIndex = newArr.findIndex((item: any) => item.id === idItem);
-    //
-    // newArr[findIndex] = {
-    //   id: idItem,
-    //   name: value.target.value,
-    //   quantity: newArr[findIndex].quantity,
-    // };
-    //
-    // setArrayAdvertise([...arrayAdvertise, newArr]);
   };
   const onChangeQuantityAdvertise = (e: any): void => {
     console.log(e.target.value);
-
-    // const findIndex = arrayAdvertise.findIndex((item) => item.id ===)
   };
 
   const handleAddCampaign = (): void => {
