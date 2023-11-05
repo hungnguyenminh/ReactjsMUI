@@ -1,4 +1,9 @@
 .campaign-container {
+
+  .MuiDataGrid-cell:focus {
+    outline: none; /* Loại bỏ đường viền màu xanh khi ô được focus */
+  }
+
   padding: 20px;
   border: 1px solid white;
   border-radius: 4px;
@@ -6,7 +11,7 @@
 
   .list-campaign {
     display: flex;
-    overflow-y: scroll;
+    overflow-x: auto;
 
     .button-add-campaign {
       width: 50px;
@@ -23,6 +28,11 @@
 
     .list-item-campaign {
       display: flex;
+      height: 130px;
+
+      .active {
+        border: 2px solid rgb(33, 150, 243) !important;
+      }
 
       .item-campaign {
         width: 213px;
@@ -33,6 +43,8 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        border: none;
+        background-color: white;
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
 
         .title {

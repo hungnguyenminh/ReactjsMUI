@@ -16,6 +16,7 @@ export interface IListSubCompaign {
   name: string;
   status: boolean
   ads: {
+    id: number;
     name: string,
     quantity: number
   }[]
@@ -26,8 +27,9 @@ export const initTialValueCampaign: IListSubCompaign = {
   status: true,
   ads: [
     {
-      name: '',
-      quantity: 8,
+      id: 1,
+      name: 'Quảng cáo 1',
+      quantity: 0,
     },
   ],
 };

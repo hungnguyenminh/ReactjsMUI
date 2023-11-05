@@ -1,45 +1,181 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, {
+  Dispatch, SetStateAction, useEffect, useState,
+} from 'react';
 import './style.scss';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {
-  Button, Checkbox, FormControlLabel, Input, TextField,
+  Button, Checkbox, FormControlLabel, TextField,
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IListSubCompaign, initTialValueCampaign } from '../../index';
-
-const ariaLabel = { 'aria-label': 'description' };
 
 interface IProps {
   listSubCampaign: IListSubCompaign[];
   setListSubCampagin: Dispatch<SetStateAction<IListSubCompaign[]>>;
 }
 
+interface IRowDataGrid {
+  id: number;
+  name: string;
+  quantity:number;
+}
+
 function Campaign(props: IProps) {
   const { listSubCampaign, setListSubCampagin } = props;
-  const [campaignSelected, setCampainSelected] = useState<IListSubCompaign>(initTialValueCampaign);
+  const [campaignSelected, setCampaignSelected] = useState<IListSubCompaign>(initTialValueCampaign);
+  const [arrayAdvertise, setArrayAdvertise] = useState<any>({
+    id: 1,
+    name: '',
+    quantity: 2,
+  });
+  // console.log(campaignSelected);
+  const handleClickCampaign = (valueItem: IListSubCompaign):void => {
+    setCampaignSelected(valueItem);
+  };
+
+  const handleUpdateListSubCampaign = (check: any): void => {
+    const newArray = [...listSubCampaign];
+
+    // eslint-disable-next-line max-len
+    const findIndex = newArray.findIndex((item: IListSubCompaign) => item.name === campaignSelected.name);
+
+    const newObject = { ...listSubCampaign[findIndex], status: check };
+
+    newArray[findIndex] = newObject;
+
+    if (findIndex !== -1) {
+      setListSubCampagin(newArray);
+    }
+  };
+
+  const onChangeCheckbox = (e: any): void => {
+    console.log('ee', e.target.checked);
+    setCampaignSelected({ ...campaignSelected, status: e.target.checked });
+    handleUpdateListSubCampaign(e.target.checked);
+  };
+
+  const onChangeNameSubCampaign = (value: any): void => {
+    console.log('value', value.target.value);
+    setCampaignSelected({ ...campaignSelected, name: value.target.value });
+  };
+
+  const onChangeNameAdvertise = (idItem: number, value: any): void => {
+    console.log('e', value.target.value);
+    console.log('idItem', idItem);
+
+    // const newObject = { ...campaignSelected };
+    //
+    // const updateSubCampaign = newObject.ads.map((item) => {
+    //   if (item.id === idItem) {
+    //     console.log('item check id', item.id);
+    //
+    //     return { ...item, name: value.target.value };
+    //   }
+    //
+    //   console.log(' item', item);
+    //   console.log('item', item);
+    //
+    //   return item;
+    // });
+    //
+    // console.log('newObject', newObject);
+    //
+    // setCampaignSelected({ ...campaignSelected, ads: updateSubCampaign });
+  };
+  const onChangeQuantityAdvertise = (e: any): void => {
+    console.log(e);
+  };
+
+  const handleAddCampaign = (): void => {
+    const NewObject: IListSubCompaign = {
+      name: `Chiến dịch ${listSubCampaign.length + 1}`,
+      status: true,
+      ads: [{
+        id: 1,
+        name: 'Quảng cáo 1',
+        quantity: 0,
+      }],
+    };
+    setListSubCampagin([...listSubCampaign, NewObject]);
+  };
+
+  const addRowAdvertise = (): void => {
+    const newObject: IRowDataGrid = {
+      id: 0,
+      name: `Quảng cáo ${campaignSelected.ads.length + 1}`,
+      quantity: 0,
+    };
+
+    setCampaignSelected({ ...campaignSelected, ads: [...campaignSelected.ads, newObject] });
+  };
+
+  const totalQuantity = (data: any) => {
+    let totalQuantityResult = 0;
+    data.map((item: any) => {
+      totalQuantityResult += item.quantity;
+      return totalQuantityResult;
+    });
+
+    return totalQuantityResult;
+  };
+
+  useEffect(() => {
+    const newArrAdvertise = setCampaignSelected(listSubCampaign[0]);
+  }, [listSubCampaign]);
 
   const columns: GridColDef[] = [
     {
       field: 'nameAdvertise',
       headerName: 'Tên quảng cáo*',
+      sortable: false,
       flex: 1,
-      renderCell: () => (
-        <Input fullWidth inputProps={ariaLabel} />
+      renderCell: (params) => (
+        <TextField
+          InputProps={{
+            style: {
+              backgroundColor: 'white',
+            },
+          }}
+          fullWidth
+          label=""
+          variant="filled"
+          value={params.row.name}
+          onChange={(e) => onChangeNameAdvertise(params.row.id, e)}
+        />
       ),
     },
     {
       field: 'Số lượng*',
-      headerName: 'First name',
+      headerName: 'Số lượng*',
+      sortable: false,
       flex: 1,
-      renderCell: () => (
-        <Input fullWidth inputProps={ariaLabel} />
+      renderCell: (params) => (
+        <div>
+          <TextField
+            InputProps={{
+              style: {
+                backgroundColor: 'white',
+              },
+            }}
+            fullWidth
+            label=""
+            type="number"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            variant="filled"
+            value={params.row.quantity}
+            onChange={(e) => onChangeQuantityAdvertise(e)}
+          />
+        </div>
       ),
     },
     {
       field: '',
       headerName: '',
+      sortable: false,
       width: 170,
       cellClassName: 'actions',
       align: 'right',
@@ -51,8 +187,9 @@ function Campaign(props: IProps) {
           <Button
             variant="outlined"
             startIcon={<AddIcon />}
+            onClick={addRowAdvertise}
           >
-            Delete
+            Thêm
           </Button>
         </div>
       ),
@@ -69,45 +206,6 @@ function Campaign(props: IProps) {
       ),
     },
   ];
-
-  const rows = [
-    {
-      id: 1, nameAdvertise: 'Snow', firstName: 'Jon', age: 35,
-    },
-  ];
-
-  console.log(campaignSelected);
-  const handleClickCampaign = (item: IListSubCompaign):void => {
-    setCampainSelected(item);
-  };
-
-  const onChangeNameSubCampaign = (value: any): void => {
-    console.log('value', value.target.value);
-    setCampainSelected({ ...campaignSelected, name: value.target.value });
-  };
-
-  const handleAddCampaign = (): void => {
-    const NewObject: IListSubCompaign = {
-      name: `Chiến dịch ${listSubCampaign.length + 1}`,
-      status: true,
-      ads: [{
-        name: '',
-        quantity: 3,
-      }],
-    };
-    setListSubCampagin([...listSubCampaign, NewObject]);
-  };
-
-  const totalQuantity = (data: any) => {
-    // eslint-disable-next-line no-shadow
-    let totalQuantity = 0;
-    // eslint-disable-next-line no-return-assign
-    data.forEach((item: any) => totalQuantity += item.quantity);
-
-    return totalQuantity;
-  };
-  console.log('listCampaign', listSubCampaign);
-
   return (
     <div className="campaign-container">
       <div className="list-campaign">
@@ -118,7 +216,10 @@ function Campaign(props: IProps) {
         <div className="list-item-campaign">
           {listSubCampaign.map((item: IListSubCompaign) => (
             // eslint-disable-next-line react/button-has-type
-            <button onClick={() => handleClickCampaign(item)} className="item-campaign">
+            <button
+              onClick={() => handleClickCampaign(item)}
+              className={`item-campaign ${campaignSelected.name === item.name ? 'active' : ''}`}
+            >
               <div className="title">
                 <p>{item.name}</p>
                 <CheckCircleIcon style={{ color: 'green', fontSize: 14 }} />
@@ -147,19 +248,23 @@ function Campaign(props: IProps) {
           />
         </div>
         <div className="isActive">
-          <FormControlLabel control={<Checkbox defaultChecked />} label="Đang hoạt động" />
+          <FormControlLabel control={<Checkbox checked={campaignSelected.status} onChange={onChangeCheckbox} />} label="Đang hoạt động" />
         </div>
       </div>
       <div className="list-advertise">
         <span>DANH SÁCH QUẢNG CÁO</span>
         <div className="list">
           <DataGrid
+            className="MuiDataGrid-cell-focus"
+            style={{ outline: 'none' }}
             disableColumnMenu
             disableColumnFilter
             disableColumnSelector
-            getCellClassName={() => 'hot'}
+            disableRowSelectionOnClick
+            disableEval
             rowHeight={65}
-            rows={rows}
+            rows={campaignSelected.ads}
+            getRowId={(row: IRowDataGrid) => row.name}
             columns={columns}
             hideFooter
             checkboxSelection
