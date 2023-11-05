@@ -25,12 +25,14 @@ interface IRowDataGrid {
 function Campaign(props: IProps) {
   const { listSubCampaign, setListSubCampagin } = props;
   const [campaignSelected, setCampaignSelected] = useState<IListSubCompaign>(initTialValueCampaign);
-  const [arrayAdvertise, setArrayAdvertise] = useState<any>({
-    id: 1,
-    name: '',
-    quantity: 2,
-  });
-  // console.log(campaignSelected);
+  // const [arrayAdvertise, setArrayAdvertise] = useState<any>({
+  //   id: 1,
+  //   name: '',
+  //   quantity: 2,
+  // });
+  // // console.log(campaignSelected);
+
+  // console.log('arrayAdvertise', arrayAdvertise);
   const handleClickCampaign = (valueItem: IListSubCompaign):void => {
     setCampaignSelected(valueItem);
   };
@@ -65,27 +67,24 @@ function Campaign(props: IProps) {
     console.log('e', value.target.value);
     console.log('idItem', idItem);
 
-    // const newObject = { ...campaignSelected };
+    // const newArr = [...arrayAdvertise];
+
+    // console.log('new arrr', newArr);
+
+    // const findIndex = newArr.findIndex((item: any) => item.id === idItem);
     //
-    // const updateSubCampaign = newObject.ads.map((item) => {
-    //   if (item.id === idItem) {
-    //     console.log('item check id', item.id);
+    // newArr[findIndex] = {
+    //   id: idItem,
+    //   name: value.target.value,
+    //   quantity: newArr[findIndex].quantity,
+    // };
     //
-    //     return { ...item, name: value.target.value };
-    //   }
-    //
-    //   console.log(' item', item);
-    //   console.log('item', item);
-    //
-    //   return item;
-    // });
-    //
-    // console.log('newObject', newObject);
-    //
-    // setCampaignSelected({ ...campaignSelected, ads: updateSubCampaign });
+    // setArrayAdvertise([...arrayAdvertise, newArr]);
   };
   const onChangeQuantityAdvertise = (e: any): void => {
-    console.log(e);
+    console.log(e.target.value);
+
+    // const findIndex = arrayAdvertise.findIndex((item) => item.id ===)
   };
 
   const handleAddCampaign = (): void => {
@@ -122,7 +121,8 @@ function Campaign(props: IProps) {
   };
 
   useEffect(() => {
-    const newArrAdvertise = setCampaignSelected(listSubCampaign[0]);
+    setCampaignSelected(listSubCampaign[0]);
+    // setArrayAdvertise(campaignSelected.ads);
   }, [listSubCampaign]);
 
   const columns: GridColDef[] = [
@@ -152,24 +152,22 @@ function Campaign(props: IProps) {
       sortable: false,
       flex: 1,
       renderCell: (params) => (
-        <div>
-          <TextField
-            InputProps={{
-              style: {
-                backgroundColor: 'white',
-              },
-            }}
-            fullWidth
-            label=""
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            variant="filled"
-            value={params.row.quantity}
-            onChange={(e) => onChangeQuantityAdvertise(e)}
-          />
-        </div>
+        <TextField
+          InputProps={{
+            style: {
+              backgroundColor: 'white',
+            },
+          }}
+          fullWidth
+          label=""
+          type="number"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          variant="filled"
+          value={params.row.quantity}
+          onChange={(e) => onChangeQuantityAdvertise(e)}
+        />
       ),
     },
     {
