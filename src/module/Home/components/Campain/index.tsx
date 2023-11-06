@@ -1,5 +1,5 @@
 import React, {
-  Dispatch, SetStateAction, useEffect, useState,
+  Dispatch, SetStateAction, useEffect, useRef, useState,
 } from 'react';
 import './style.scss';
 import AddIcon from '@mui/icons-material/Add';
@@ -22,23 +22,29 @@ interface IRowDataGrid {
   quantity:number;
 }
 
+interface IValueFieldAds {
+  value: string,
+  id: number,
+  type: 'name' | 'quantity'
+}
+
 function Campaign(props: IProps) {
   const { listSubCampaign, setListSubCampagin } = props;
+  const inputRef = useRef(null);
   const [campaignSelected, setCampaignSelected] = useState<IListSubCompaign>(initTialValueCampaign);
-  // const [arrayAdvertise, setArrayAdvertise] = useState<any>({
-  //   id: 1,
-  //   name: '',
-  //   quantity: 2,
-  // });
-  // // console.log(campaignSelected);
+  const [arrayAdvertise, setArrayAdvertise] = useState<any>(campaignSelected.ads);
 
+  const [valueItemCurrentAds, setValueItemCurrentAds] = useState<IValueFieldAds>(arrayAdvertise[0]);
+
+  console.log('arrayAdvertise ', arrayAdvertise);
   console.log('listSubCampaign', listSubCampaign);
-  // console.log('campaignSelected', campaignSelected);
   const handleClickCampaign = (valueItem: IListSubCompaign):void => {
     setCampaignSelected(valueItem);
   };
 
-  const handleUpdateListSubCampaign = (inputValue: any, type: 'name' | 'status'): void => {
+  const handleCheckFocusTextField = (id: number, type: 'name' | 'quantity') => (!!(id === valueItemCurrentAds.id && type === valueItemCurrentAds.type));
+
+  const handleUpdateListSubCampaign = (inputValue: any, type: 'ads' | 'name' | 'status'): void => {
     const newArray = [...listSubCampaign];
 
     // eslint-disable-next-line max-len
@@ -47,7 +53,7 @@ function Campaign(props: IProps) {
     const newObject = {
       name: type === 'name' ? inputValue : newArray[findIndex].name,
       status: type === 'status' ? inputValue : newArray[findIndex].status,
-      ads: newArray[findIndex].ads,
+      ads: type === 'ads' ? inputValue : newArray[findIndex].ads,
     };
 
     newArray[findIndex] = newObject;
@@ -58,23 +64,30 @@ function Campaign(props: IProps) {
   };
 
   const onChangeCheckbox = (e: any): void => {
-    console.log('ee', e.target.checked);
     setCampaignSelected({ ...campaignSelected, status: e.target.checked });
     handleUpdateListSubCampaign(e.target.checked, 'status');
   };
 
   const onChangeNameSubCampaign = (value: any): void => {
     setCampaignSelected({ ...campaignSelected, name: value.target.value });
-    // eslint-disable-next-line no-undef
     handleUpdateListSubCampaign(value.target.value, 'name');
   };
 
-  const onChangeNameAdvertise = (idItem: number, value: any): void => {
-    console.log('e', value.target.value);
-    console.log('idItem', idItem);
-  };
-  const onChangeQuantityAdvertise = (e: any): void => {
-    console.log(e.target.value);
+  const handleBlurAds = (currentId: number, value: string, type: 'name' | 'quantity') => {
+    const findIndex = arrayAdvertise.findIndex((item: any) => item.id === currentId);
+
+    const newArray = [...arrayAdvertise];
+    const newObject = {
+      id: newArray[findIndex].id,
+      name: type === 'name' ? value : newArray[findIndex].name,
+      quantity: type === 'quantity' ? value : newArray[findIndex].quantity,
+    };
+
+    newArray[findIndex] = newObject;
+
+    setArrayAdvertise(newArray);
+
+    handleUpdateListSubCampaign(newArray, 'ads');
   };
 
   const handleAddCampaign = (): void => {
@@ -112,7 +125,6 @@ function Campaign(props: IProps) {
 
   useEffect(() => {
     setCampaignSelected(listSubCampaign[0]);
-    // setArrayAdvertise(campaignSelected.ads);
   }, [listSubCampaign]);
 
   const columns: GridColDef[] = [
@@ -123,6 +135,8 @@ function Campaign(props: IProps) {
       flex: 1,
       renderCell: (params) => (
         <TextField
+          key={params.row.id}
+          inputRef={inputRef}
           InputProps={{
             style: {
               backgroundColor: 'white',
@@ -131,8 +145,11 @@ function Campaign(props: IProps) {
           fullWidth
           label=""
           variant="filled"
-          value={params.row.name}
-          onChange={(e) => onChangeNameAdvertise(params.row.id, e)}
+          value={handleCheckFocusTextField(params.row.id, 'name') ? valueItemCurrentAds.value : params.row.name}
+          onBlur={(e) => handleBlurAds(params.row.id, e.target.value, 'name')}
+          onChange={(event) => {
+            setValueItemCurrentAds({ id: params.row.id, value: event.target.value, type: 'name' });
+          }}
         />
       ),
     },
@@ -155,8 +172,11 @@ function Campaign(props: IProps) {
             shrink: true,
           }}
           variant="filled"
-          value={params.row.quantity}
-          onChange={(e) => onChangeQuantityAdvertise(e)}
+          value={handleCheckFocusTextField(params.row.id, 'quantity') ? valueItemCurrentAds.value : params.row.quantity}
+          onBlur={(e) => handleBlurAds(params.row.id, e.target.value, 'quantity')}
+          onChange={(event) => {
+            setValueItemCurrentAds({ id: params.row.id, value: event.target.value, type: 'quantity' });
+          }}
         />
       ),
     },
@@ -251,7 +271,7 @@ function Campaign(props: IProps) {
             disableRowSelectionOnClick
             disableEval
             rowHeight={65}
-            rows={campaignSelected.ads}
+            rows={arrayAdvertise}
             getRowId={(row: IRowDataGrid) => row.name}
             columns={columns}
             hideFooter
