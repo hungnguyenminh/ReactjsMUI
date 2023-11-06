@@ -21,16 +21,13 @@ function Campaign(props: IProps) {
   const { listSubCampaign, setListSubCampagin } = props;
   const inputRef = useRef(null);
 
+  const getItemIdSubCampaign = parseInt(localStorage.getItem('idCampaign') ?? '1', 10);
+
   // eslint-disable-next-line max-len
   const [inforAdvertiseSelected, setInforAdvertiseSelected] = useState<IInforAdvertise>(initTialValueCampaign);
   // eslint-disable-next-line max-len
   const [arrayAdvertiseSelected, setArrayAdvertiseSelected] = useState<any>(initTialValueCampaign.ads);
 
-  const getItem = localStorage.getItem('idCampaign') ?? '1';
-  // const [valueCurrentInfoAds, setValueCurrentInfoAds] = useState({
-  //   name: '',
-  //   status: ','
-  // })
   const [valueItemCurrentAds, setValueItemCurrentAds] = useState<any>(arrayAdvertiseSelected[0]);
 
   // console.log('inforAdvertiseSelected ', inforAdvertiseSelected);
@@ -141,19 +138,17 @@ function Campaign(props: IProps) {
 
     setArrayAdvertiseSelected(listSubCampaign[0].ads);
 
-    if (getItem) {
-      listSubCampaign.forEach((item) => {
-        if (parseInt(getItem, 10) === item.id) {
-          setInforAdvertiseSelected({
-            id: item.id,
-            name: item.name,
-            status: item.status,
-          });
-          setArrayAdvertiseSelected(item.ads);
-        }
-      });
-    }
-  }, [getItem, listSubCampaign]);
+    listSubCampaign.forEach((item) => {
+      if (getItemIdSubCampaign === item.id) {
+        setInforAdvertiseSelected({
+          id: item.id,
+          name: item.name,
+          status: item.status,
+        });
+        setArrayAdvertiseSelected(item.ads);
+      }
+    });
+  }, [getItemIdSubCampaign, listSubCampaign]);
 
   const columns: GridColDef[] = [
     {
@@ -255,7 +250,7 @@ function Campaign(props: IProps) {
             // eslint-disable-next-line react/button-has-type
             <button
               onClick={() => handleClickCampaign(item)}
-              className={`item-campaign ${parseInt(getItem, 10) === item.id ? 'active' : ''}`}
+              className={`item-campaign ${getItemIdSubCampaign === item.id ? 'active' : ''}`}
             >
               <div className="title">
                 <p>{item.name}</p>
