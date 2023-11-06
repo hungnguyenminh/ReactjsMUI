@@ -6,23 +6,10 @@ import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Button } from '@mui/material';
 import Campaign from './components/Campain';
 import Information from './components/Information';
-
-export interface IInformation {
-  name: string;
-  describe: string;
-}
-
-export interface IListSubCompaign {
-  name: string;
-  status: boolean
-  ads: {
-    id: number;
-    name: string,
-    quantity: number
-  }[]
-}
+import { IInformation, IListSubCompaign } from '../interface';
 
 export const initTialValueCampaign: IListSubCompaign = {
+  id: 1,
   name: 'Chiến dịch 1',
   status: true,
   ads: [

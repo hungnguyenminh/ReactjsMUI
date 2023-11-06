@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction } from 'react';
 import { TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import './style.scss';
-import { IInformation } from '../../index';
+import { IInformation } from '../../../interface';
 
 interface Iprops {
   commonCampaign: IInformation;
