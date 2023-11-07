@@ -37,7 +37,7 @@ function Campaign(props: IProps) {
   // eslint-disable-next-line max-len
   const [arrayAdvertiseSelected, setArrayAdvertiseSelected] = useState<any>(initTialValueCampaign.ads);
 
-  const [valueItemCurrentAds, setValueItemCurrentAds] = useState<any>(arrayAdvertiseSelected[0]);
+  const [valueItemCurrentAds, setValueItemCurrentAds] = useState<any>([]);
 
   const [valueSelectCheckboxAds, setValueSelectCheckboxAds] = useState<GridRowSelectionModel>([]);
 
@@ -209,6 +209,7 @@ function Campaign(props: IProps) {
           variant="filled"
           value={handleCheckFocusTextField(params.row.id, 'name') ? valueItemCurrentAds.value : params.row.name}
           onBlur={(e) => {
+            setValueItemCurrentAds([]);
             handleBlurAds(params.row.id, e.target.value, 'name');
           }}
           onChange={(event) => {
@@ -244,12 +245,14 @@ function Campaign(props: IProps) {
           value={handleCheckFocusTextField(params.row.id, 'quantity') ? valueItemCurrentAds.value : params.row.quantity}
           onChange={(event) => {
             setValidateSubCampaign(
-              parseInt(event.target.value, 10) > 0
+              isValidate
+              && parseInt(event.target.value, 10) > 0
                 && event.target.value.length > 0,
             );
             setValueItemCurrentAds({ id: params.row.id, value: event.target.value, type: 'quantity' });
             handleBlurAds(params.row.id, event.target.value, 'quantity');
           }}
+          onBlur={() => setValueItemCurrentAds([])}
         />
       ),
     },

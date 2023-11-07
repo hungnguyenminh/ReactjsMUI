@@ -16,7 +16,7 @@ export const initTialValueCampaign: IListSubCompaign = {
     {
       id: 1,
       name: 'Quảng cáo 1',
-      quantity: 0,
+      quantity: 10,
     },
   ],
 };
