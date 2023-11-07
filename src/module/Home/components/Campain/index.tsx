@@ -5,9 +5,9 @@ import './style.scss';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {
-  Button, Checkbox, FormControlLabel, TextField,
+  Button, Checkbox, FormControlLabel, TextField, Tooltip,
 } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IArrayAdvertise, IInforAdvertise, IListSubCompaign } from '../../../interface';
 import { initTialValueCampaign } from '../../index';
@@ -30,8 +30,7 @@ function Campaign(props: IProps) {
 
   const [valueItemCurrentAds, setValueItemCurrentAds] = useState<any>(arrayAdvertiseSelected[0]);
 
-  // console.log('inforAdvertiseSelected ', inforAdvertiseSelected);
-  console.log('listSubCampaign', listSubCampaign);
+  const [valueSelectCheckboxAds, setValueSelectCheckboxAds] = useState<GridRowSelectionModel>([]);
 
   const handleClickCampaign = (valueItem: IListSubCompaign):void => {
     // const findIndex = listSubCampaign
@@ -49,7 +48,6 @@ function Campaign(props: IProps) {
   const handleUpdateListSubCampaign = (inputValue: any, type: 'ads' | 'name' | 'status'): void => {
     const newArray = [...listSubCampaign];
 
-    console.log(1);
     // eslint-disable-next-line max-len
     const findIndex = newArray.findIndex((item: IListSubCompaign) => item.name === inforAdvertiseSelected.name);
 
@@ -77,14 +75,14 @@ function Campaign(props: IProps) {
     handleUpdateListSubCampaign(value.target.value, 'name');
   };
 
-  const handleBlurAds = (currentId: number, value: any, type: 'name' | 'quantity') => {
+  const handleBlurAds = (currentId: number, value: string, type: 'name' | 'quantity') => {
     const findIndex = arrayAdvertiseSelected.findIndex((item: any) => item.id === currentId);
 
     const newArray = [...arrayAdvertiseSelected];
     const newObject = {
       id: newArray[findIndex].id,
       name: type === 'name' ? value : newArray[findIndex].name,
-      quantity: type === 'quantity' ? value : newArray[findIndex].quantity,
+      quantity: type === 'quantity' ? parseInt(value, 10) : newArray[findIndex].quantity,
     };
 
     newArray[findIndex] = newObject;
@@ -110,12 +108,31 @@ function Campaign(props: IProps) {
 
   const addRowAdvertise = (): void => {
     const newObject: IArrayAdvertise = {
-      id: 0,
+      id: arrayAdvertiseSelected.length + 1,
       name: `Quảng cáo ${arrayAdvertiseSelected.length + 1}`,
       quantity: 0,
     };
 
-    setArrayAdvertiseSelected(newObject);
+    setArrayAdvertiseSelected([...arrayAdvertiseSelected, newObject]);
+  };
+
+  const handleSelectCheckboxAds = (listCheckbox: GridRowSelectionModel) => {
+    setValueSelectCheckboxAds(listCheckbox);
+  };
+
+  const handleDeleteMultiRowAds = (): void => {
+    // eslint-disable-next-line max-len
+    const newArray = arrayAdvertiseSelected.filter((item: IInforAdvertise) => !valueSelectCheckboxAds?.includes(item.id));
+
+    setArrayAdvertiseSelected(newArray);
+  };
+
+  const deleteRowAdvertise = (id: number): void => {
+    const newArr = arrayAdvertiseSelected.filter((item: IInforAdvertise) => (
+      item.id !== id
+    ));
+
+    setArrayAdvertiseSelected(newArr);
   };
 
   const totalQuantity = (data: any) => {
@@ -153,16 +170,29 @@ function Campaign(props: IProps) {
   const columns: GridColDef[] = [
     {
       field: 'nameAdvertise',
-      headerName: 'Tên quảng cáo*',
       sortable: false,
       flex: 1,
+      renderHeader: () => (
+        <div>
+          {valueSelectCheckboxAds.length > 0 ? (
+          // eslint-disable-next-line max-len
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/control-has-associated-label
+            <div tabIndex={0} role="button" onClick={handleDeleteMultiRowAds} style={{ display: 'flex', alignItems: 'center' }}>
+              <Tooltip title="Xoá">
+                <DeleteIcon />
+              </Tooltip>
+            </div>
+          ) : <div>Tên quảng cáo*</div> }
+
+        </div>
+      ),
       renderCell: (params) => (
         <TextField
           key={params.row.id}
           inputRef={inputRef}
           InputProps={{
             style: {
-              backgroundColor: 'white',
+              backgroundColor: 'transparent',
             },
           }}
           fullWidth
@@ -178,14 +208,17 @@ function Campaign(props: IProps) {
     },
     {
       field: 'Số lượng*',
-      headerName: 'Số lượng*',
       sortable: false,
       flex: 1,
+      renderHeader: () => (
+        <div>{valueSelectCheckboxAds.length > 0 ? '' : 'Số lượng*' }</div>
+      ),
       renderCell: (params) => (
         <TextField
           InputProps={{
             style: {
-              backgroundColor: 'white',
+              backgroundColor: 'transparent',
+              justifyContent: 'flex-end',
             },
           }}
           fullWidth
@@ -196,9 +229,9 @@ function Campaign(props: IProps) {
           }}
           variant="filled"
           value={handleCheckFocusTextField(params.row.id, 'quantity') ? valueItemCurrentAds.value : params.row.quantity}
-          onBlur={(e) => handleBlurAds(params.row.id, e.target.value, 'quantity')}
           onChange={(event) => {
             setValueItemCurrentAds({ id: params.row.id, value: event.target.value, type: 'quantity' });
+            handleBlurAds(params.row.id, event.target.value, 'quantity');
           }}
         />
       ),
@@ -208,11 +241,12 @@ function Campaign(props: IProps) {
       headerName: '',
       sortable: false,
       width: 170,
-      cellClassName: 'actions',
-      align: 'right',
+      // cellClassName: 'actions',
+      // align: 'right',
       renderHeader: () => (
         <div style={{
           textAlign: 'right',
+          width: '170px',
         }}
         >
           <Button
@@ -224,7 +258,7 @@ function Campaign(props: IProps) {
           </Button>
         </div>
       ),
-      renderCell: () => (
+      renderCell: (params) => (
         <div style={{
           width: '100%',
           fontSize: 14,
@@ -232,12 +266,14 @@ function Campaign(props: IProps) {
           justifyContent: 'flex-end',
         }}
         >
-          <DeleteIcon />
+          <Tooltip onClick={() => deleteRowAdvertise(params.row.id)} title="Xoá">
+            <DeleteIcon />
+          </Tooltip>
         </div>
       ),
     },
   ];
-  // @ts-ignore
+
   return (
     <div className="campaign-container">
       <div className="list-campaign">
@@ -253,8 +289,16 @@ function Campaign(props: IProps) {
               className={`item-campaign ${getItemIdSubCampaign === item.id ? 'active' : ''}`}
             >
               <div className="title">
-                <p>{item.name}</p>
-                <CheckCircleIcon style={{ color: 'green', fontSize: 14 }} />
+                <p>
+                  {item.name}
+                </p>
+                <CheckCircleIcon
+                  style={{
+                    color: item.status ? 'green' : 'gray',
+                    fontSize: 14,
+                    paddingBottom: 4,
+                  }}
+                />
               </div>
               <div className="quantity">
                 {totalQuantity(item.ads)}
@@ -287,8 +331,8 @@ function Campaign(props: IProps) {
         <span>DANH SÁCH QUẢNG CÁO</span>
         <div className="list">
           <DataGrid
-            className="MuiDataGrid-cell-focus"
-            style={{ outline: 'none' }}
+            className="custom-data-grid"
+            style={{ outline: 'none', overflow: 'hidden' }}
             disableColumnMenu
             disableColumnFilter
             disableColumnSelector
@@ -296,10 +340,15 @@ function Campaign(props: IProps) {
             disableEval
             rowHeight={65}
             rows={arrayAdvertiseSelected}
-            getRowId={(row: IArrayAdvertise) => row.name}
+            getRowId={(row: IArrayAdvertise) => row.id}
             columns={columns}
             hideFooter
             checkboxSelection
+            // selectionModel={selectRowCheckbox}
+            onRowSelectionModelChange={(ids: GridRowSelectionModel) => {
+              console.log(ids);
+              handleSelectCheckboxAds(ids);
+            }}
           />
         </div>
       </div>

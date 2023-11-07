@@ -35,8 +35,6 @@ function Home() {
     setValue(newValue);
   };
 
-  console.log('commonCampaign', commonCampaign);
-
   return (
     <div className="home-container">
       <div className="button-submit">

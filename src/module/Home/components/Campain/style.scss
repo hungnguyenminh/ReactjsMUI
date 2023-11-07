@@ -1,8 +1,16 @@
+
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-columnHeader:focus, .css-kzyyzb-MuiDataGrid-root .MuiDataGrid-cell:focus {
+  outline: none !important; /* Loại bỏ hiệu ứng border màu xanh khi cell được focus */
+}
+
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-cell:focus-within,
+.css-kzyyzb-MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within {
+  outline: none !important;
+}
+
 .campaign-container {
 
-  .MuiDataGrid-cell:focus {
-    outline: none; /* Loại bỏ đường viền màu xanh khi ô được focus */
-  }
+
 
   padding: 20px;
   border: 1px solid white;
@@ -49,16 +57,26 @@
 
         .title {
           display: flex;
-          align-items: center;
+          align-items: flex-end;
 
-          p {
-            margin-right: 4px;
-            margin-bottom: 0px;
-            margin-top: 0;
-            padding-bottom: 0px;
-            font-size: 20px;
-            color: #000000DE;
-          }
+            p {
+              max-width: 180px;
+              width: auto;
+              margin-right: 4px;
+              margin-bottom: 0px;
+              margin-top: 0;
+              padding-bottom: 0px;
+              font-size: 20px;
+              color: #000000DE;
+
+              overflow: hidden;
+              text-overflow: ellipsis;
+              display: -webkit-box;
+              -webkit-line-clamp: 2; /* number of lines to show */
+              line-clamp: 2;
+              -webkit-box-orient: vertical;
+
+            }
         }
 
         .quantity {
