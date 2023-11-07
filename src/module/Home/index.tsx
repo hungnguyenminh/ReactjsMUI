@@ -22,7 +22,13 @@ export const initTialValueCampaign: IListSubCompaign = {
 };
 
 function Home() {
+  const [validateNameCampagin, setValidateNameCampaign] = useState<boolean>(true);
+  const [validateSubCampaign, setValidateSubCampaign] = useState<boolean>(true);
+
+  const [isValidate, setIsValidate] = useState<boolean>(false);
+
   const [value, setValue] = useState<string>('1');
+
   const [commonCampaign, setCommonCampain] = useState<IInformation>({
     name: '',
     describe: '',
@@ -31,13 +37,44 @@ function Home() {
     initTialValueCampaign,
   ]);
 
+  const handleSubmit = (): void => {
+    setIsValidate(true);
+
+    if (commonCampaign.name.length === 0) {
+      setValidateNameCampaign(false);
+      alert('Vui lòng điền đúng và đầy đủ thông tin!');
+      return;
+    }
+
+    // listSubCampaign.forEach((item) => {
+    //   if(item.name.length)
+    // })
+
+    if (validateSubCampaign === false) {
+      alert('Vui lòng điền đúng và đầy đủ thông tin!');
+      return;
+    }
+
+    const Object = { campaign: commonCampaign, subCampaigns: listSubCampaign };
+
+    const textSucess = `Thêm thành công chiến dịch \n ${JSON.stringify(Object)}`;
+    alert(textSucess);
+  };
+
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 
   return (
     <div className="home-container">
-      <div className="button-submit">
+      {/* eslint-disable-next-line max-len */}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+      <div
+        onClick={() => {
+          handleSubmit();
+        }}
+        className="button-submit"
+      >
         <Button color="primary" variant="contained">Submit</Button>
       </div>
       <div className="tab-campaign">
@@ -48,8 +85,24 @@ function Home() {
               <Tab className="customTab" label="CHIẾN DỊCH CON" value="2" />
             </TabList>
           </Box>
-          <TabPanel value="1" style={{ padding: 0 }}><Information commonCampaign={commonCampaign} setCommonCampain={setCommonCampain} /></TabPanel>
-          <TabPanel value="2" style={{ padding: 0 }}><Campaign listSubCampaign={listSubCampaign} setListSubCampagin={setListSubCampagin} /></TabPanel>
+          <TabPanel value="1" style={{ padding: 0 }}>
+            <Information
+              isValidate={isValidate}
+              validateNameCampagin={validateNameCampagin}
+              setValidateNameCampaign={setValidateNameCampaign}
+              commonCampaign={commonCampaign}
+              setCommonCampain={setCommonCampain}
+            />
+          </TabPanel>
+          <TabPanel value="2" style={{ padding: 0 }}>
+            <Campaign
+              validateSubCampaign={validateSubCampaign}
+              isValidate={isValidate}
+              listSubCampaign={listSubCampaign}
+              setListSubCampagin={setListSubCampagin}
+              setValidateSubCampaign={setValidateSubCampaign}
+            />
+          </TabPanel>
         </TabContext>
       </div>
     </div>

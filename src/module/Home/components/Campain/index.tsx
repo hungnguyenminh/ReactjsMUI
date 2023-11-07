@@ -13,12 +13,21 @@ import { IArrayAdvertise, IInforAdvertise, IListSubCompaign } from '../../../int
 import { initTialValueCampaign } from '../../index';
 
 interface IProps {
+  isValidate: boolean;
+  validateSubCampaign: boolean;
+  setValidateSubCampaign: any;
   listSubCampaign: IListSubCompaign[];
   setListSubCampagin: Dispatch<SetStateAction<IListSubCompaign[]>>;
 }
 
 function Campaign(props: IProps) {
-  const { listSubCampaign, setListSubCampagin } = props;
+  const {
+    isValidate,
+    validateSubCampaign,
+    setValidateSubCampaign,
+    listSubCampaign,
+    setListSubCampagin,
+  } = props;
   const inputRef = useRef(null);
 
   const getItemIdSubCampaign = parseInt(localStorage.getItem('idCampaign') ?? '1', 10);
@@ -33,7 +42,6 @@ function Campaign(props: IProps) {
   const [valueSelectCheckboxAds, setValueSelectCheckboxAds] = useState<GridRowSelectionModel>([]);
 
   const handleClickCampaign = (valueItem: IListSubCompaign):void => {
-    // const findIndex = listSubCampaign
     setInforAdvertiseSelected({
       id: valueItem.id,
       name: valueItem.name,
@@ -190,6 +198,7 @@ function Campaign(props: IProps) {
         <TextField
           key={params.row.id}
           inputRef={inputRef}
+          sx={{ borderBottom: `${params.row.name.length <= 0 && isValidate ? 'solid red 2px' : ''}` }}
           InputProps={{
             style: {
               backgroundColor: 'transparent',
@@ -199,8 +208,11 @@ function Campaign(props: IProps) {
           label=""
           variant="filled"
           value={handleCheckFocusTextField(params.row.id, 'name') ? valueItemCurrentAds.value : params.row.name}
-          onBlur={(e) => handleBlurAds(params.row.id, e.target.value, 'name')}
+          onBlur={(e) => {
+            handleBlurAds(params.row.id, e.target.value, 'name');
+          }}
           onChange={(event) => {
+            setValidateSubCampaign(event.target.value.length > 0);
             setValueItemCurrentAds({ id: params.row.id, value: event.target.value, type: 'name' });
           }}
         />
@@ -215,6 +227,7 @@ function Campaign(props: IProps) {
       ),
       renderCell: (params) => (
         <TextField
+          sx={{ borderBottom: `${parseInt(params.row.quantity, 10) <= 0 && isValidate ? 'solid red 2px' : ''}` }}
           InputProps={{
             style: {
               backgroundColor: 'transparent',
@@ -230,6 +243,10 @@ function Campaign(props: IProps) {
           variant="filled"
           value={handleCheckFocusTextField(params.row.id, 'quantity') ? valueItemCurrentAds.value : params.row.quantity}
           onChange={(event) => {
+            setValidateSubCampaign(
+              parseInt(event.target.value, 10) > 0
+                && event.target.value.length > 0,
+            );
             setValueItemCurrentAds({ id: params.row.id, value: event.target.value, type: 'quantity' });
             handleBlurAds(params.row.id, event.target.value, 'quantity');
           }}
@@ -274,6 +291,7 @@ function Campaign(props: IProps) {
     },
   ];
 
+  // @ts-ignore
   return (
     <div className="campaign-container">
       <div className="list-campaign">
@@ -289,7 +307,7 @@ function Campaign(props: IProps) {
               className={`item-campaign ${getItemIdSubCampaign === item.id ? 'active' : ''}`}
             >
               <div className="title">
-                <p>
+                <p style={{ color: validateSubCampaign ? 'black' : 'red' }}>
                   {item.name}
                 </p>
                 <CheckCircleIcon
@@ -320,7 +338,11 @@ function Campaign(props: IProps) {
               },
             }}
             value={inforAdvertiseSelected?.name}
-            onChange={(e) => onChangeNameSubCampaign(e)}
+            onChange={(e) => {
+              setValidateSubCampaign(e.target.value.length > 0);
+              onChangeNameSubCampaign(e);
+            }}
+            // onBlur={(e) => setValidateSubCampaign(e.target.value.length > 0)}
           />
         </div>
         <div className="isActive">
@@ -346,7 +368,6 @@ function Campaign(props: IProps) {
             checkboxSelection
             // selectionModel={selectRowCheckbox}
             onRowSelectionModelChange={(ids: GridRowSelectionModel) => {
-              console.log(ids);
               handleSelectCheckboxAds(ids);
             }}
           />

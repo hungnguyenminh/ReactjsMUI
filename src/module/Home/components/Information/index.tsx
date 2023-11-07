@@ -1,12 +1,16 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import { TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import './style.scss';
 import { IInformation } from '../../../interface';
 
 interface Iprops {
+  isValidate: boolean;
+  validateNameCampagin: boolean;
   commonCampaign: IInformation;
   setCommonCampain: Dispatch<SetStateAction<IInformation>>;
+  setValidateNameCampaign: any;
+
 }
 
 interface IListInput {
@@ -14,7 +18,8 @@ interface IListInput {
   id: string
   error?: boolean;
   helperText?: string;
-  name: string
+  name: string;
+  value?: string;
 }
 
 const styleTextField = {
@@ -23,8 +28,11 @@ const styleTextField = {
 };
 
 function Information(props: Iprops) {
-  const { setCommonCampain, commonCampaign } = props;
+  const {
+    setCommonCampain, commonCampaign, isValidate, validateNameCampagin, setValidateNameCampaign,
+  } = props;
 
+  console.log('validateNameCampagin', validateNameCampagin);
   const handleChangeInput = (nameCampaign: string, value?: any): void => {
     setCommonCampain({
       name: nameCampaign === 'name' ? value.target.value : commonCampaign.name,
@@ -36,17 +44,23 @@ function Information(props: Iprops) {
     {
       label: 'Tên chiến dịch *',
       id: 'outlined-basic',
-      error: true,
-      helperText: 'Dữ liệu không hợp lệ',
+      error: !validateNameCampagin,
+      helperText: validateNameCampagin ? '' : 'Dữ liệu không hợp lệ',
       name: 'name',
+      value: commonCampaign.name,
     },
     {
       label: 'Mô tả',
       id: 'outlined-basic',
       error: false,
       name: 'describe',
+      value: commonCampaign.describe,
     },
   ];
+
+  useEffect(() => {
+
+  }, [validateNameCampagin]);
 
   return (
     <div className="information-container">
@@ -58,7 +72,11 @@ function Information(props: Iprops) {
             id="outlined-basic"
             label={item.label}
             variant="filled"
-            onChange={(e) => (handleChangeInput(item.name, e))}
+            value={item.value}
+            onChange={(e) => {
+              handleChangeInput(item.name, e);
+              setValidateNameCampaign(isValidate && e.target.value.length > 0);
+            }}
             fullWidth
             InputProps={{
               style: styleTextField,
